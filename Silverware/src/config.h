@@ -30,7 +30,7 @@
 // *************rate in deg/sec
 // *************for acro mode
 #define MAX_RATE 860.0          //Roll & Pitch axis
-#define MAX_RATEYAW 500.0       //Yaw axis (used in acro and leveling modes)
+#define MAX_RATEYAW 600.0       //Yaw axis (used in acro and leveling modes)
 
 // *************EXPO from 0.00 to 1.00 , 0 = no exp
 // *************positive = less sensitive near center 
@@ -75,19 +75,19 @@
 
 // *************Radio protocol selection
 // *************select only one
-#define RX_SBUS
+//#define RX_SBUS
 //#define RX_CRSF                                           //Requires tbs firmware v2.88 or newer for failsafe to operate properly
 //#define RX_DSMX_2048
 //#define RX_DSM2_1024
 //#define RX_IBUS
 //#define RX_NRF24_BAYANG_TELEMETRY
 //#define RX_BAYANG_BLE_APP
-//#define RX_BAYANG_PROTOCOL_TELEMETRY_AUTOBIND
+#define RX_BAYANG_PROTOCOL_TELEMETRY_AUTOBIND
 
 // *************Transmitter Type Selection
 //#define USE_STOCK_TX
-//#define USE_DEVO
-#define USE_MULTI
+#define USE_DEVO
+//#define USE_MULTI
 
 // *******************************SWITCH SELECTION*****************************
 // *************CHAN_ON - on always ( all protocols)
@@ -104,7 +104,7 @@
 //*************channel is on, or racemodeHORIZON if both channels are on - and will be standard LEVELMODE if neither 
 //*************racemode or horizon are switched on.
 #define ARMING CHAN_5
-#define IDLE_UP CHAN_5
+#define IDLE_UP CHAN_11
 #define LEVELMODE CHAN_6
 #define RACEMODE  CHAN_7
 #define HORIZON   CHAN_8
@@ -128,7 +128,9 @@
 // *************automatically remove center bias in toy tx ( needs throttle off for 1 second )
 //#define STOCK_TX_AUTOCENTER
 
-
+// *************quick flashing LED when RSSI level drops below set level
+// *************value is packets per second for Bayang, percentage of full (2047) RSSI when RSSI is returned as channel 9 in SBUS
+#define RSSI_WARNING_LEVEL 40
 
 
 //**********************************************************************************************************************
@@ -155,7 +157,7 @@
 #define STOP_LOWBATTERY
 
 // *************voltage per cell to start warning led blinking
-#define VBATTLOW 3.5
+#define VBATTLOW 3.2
 
 // *************automatic voltage telemetry correction/calibration factor - change the values below if voltage telemetry is inaccurate
 // *************Corrects for an offset error in the telemetry measurement (same offset across the battery voltage range)
@@ -205,8 +207,8 @@
 //#define WEAK_FILTERING
 //#define STRONG_FILTERING
 //#define VERY_STRONG_FILTERING
-//#define ALIENWHOOP_ZERO_FILTERING
-#define BETA_FILTERING
+#define ALIENWHOOP_ZERO_FILTERING
+//#define BETA_FILTERING
 
 #ifdef BETA_FILTERING  //*** ABOVE 100 ADJUST IN INCRIMENTS OF 20, BELOW 100 ADJUST IN INCRIMENTS OF 10, nothing coded beyond 500hz
 

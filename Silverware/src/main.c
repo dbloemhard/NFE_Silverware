@@ -126,6 +126,11 @@ int arming_release;
 int binding_while_armed = 1;
 float lipo_cell_count = 1;
 
+// warn of low RSSI through the status LED
+#ifdef RSSI_WARNING_LEVEL
+extern int rssi_warning;
+#endif
+
 //Experimental Flash Memory Feature
 int flash_feature_1 = 0;
 int flash_feature_2 = 0;
@@ -455,7 +460,15 @@ if ( LED_NUMBER > 0)
                 }
             else 
             {  
-                int leds_on = !aux[LEDS_ON];
+#ifdef RSSI_WARNING_LEVEL
+							if ( rssi_warning )
+								{
+										ledflash ( 100000, 15);
+								}
+							else
+								{
+#endif
+								int leds_on = !aux[LEDS_ON];
                 if (ledcommand)
                 {
                     if (!ledcommandtime)
@@ -494,7 +507,10 @@ if ( LED_NUMBER > 0)
                     else ledon(255);
                 }
                 else ledoff(255);
-            }
+#ifdef RSSI_WARNING_LEVEL
+								}
+#endif
+						}
         } 		       
     }
 }

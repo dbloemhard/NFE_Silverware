@@ -31,6 +31,10 @@ int failsafe = 0;
 int rxmode = 0;
 int rx_ready = 0;
 
+// warn of low RSSI through the status LED
+#ifdef RSSI_WARNING_LEVEL
+int rssi_warning;
+#endif
 
 // internal sbus variables
 #define RX_BUFF_SIZE 64							//SPEK_FRAME_SIZE 16  
@@ -339,7 +343,11 @@ if ( frame_received )
 		    aux[CHAN_6] = (channels[5] > 993) ? 1 : 0;
 		    aux[CHAN_7] = (channels[6] > 993) ? 1 : 0;
 		    aux[CHAN_8] = (channels[7] > 993) ? 1 : 0;
+#ifdef RSSI_WARNING_LEVEL
+				rssi_warning = (channels[8] < (2047 * RSSI_WARNING_LEVEL / 100)) ? 1 : 0;
+#else
 		    aux[CHAN_9] = (channels[8] > 993) ? 1 : 0;
+#endif
 
 #ifdef USE_ANALOG_AUX
         // Map to range 0 to 1
