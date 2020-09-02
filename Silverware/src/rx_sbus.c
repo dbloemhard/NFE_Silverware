@@ -33,6 +33,7 @@ int rx_ready = 0;
 
 // warn of low RSSI through the status LED
 #ifdef RSSI_WARNING_LEVEL
+float rssi;
 int rssi_warning;
 #endif
 
@@ -56,7 +57,7 @@ int frame_received = 0;
 int rx_state = 0;
 int bind_safety = 0;
 uint8_t data[25];
-int channels[9];
+int channels[16];
 
 int failsafe_sbus_failsafe = 0;   
 int failsafe_siglost = 0; 
@@ -261,7 +262,7 @@ else
       
 if ( frame_received )
 {
-   int channels[9];
+   //int channels[9];
    //decode frame    
    channels[0]  = ((data[1]|data[2]<< 8) & 0x07FF);
    channels[1]  = ((data[2]>>3|data[3]<<5) & 0x07FF);
@@ -272,6 +273,15 @@ if ( frame_received )
    channels[6]  = ((data[9]>>2|data[10]<<6) & 0x07FF);
    channels[7]  = ((data[10]>>5|data[11]<<3) & 0x07FF);
    channels[8]  = ((data[12]|data[13]<< 8) & 0x07FF);
+	 channels[9]  = ((data[13]>>3|data[14]<<5) & 0x07FF);
+   channels[10]  = ((data[14]>>6|data[15]<<2|data[16]<<10) & 0x07FF);
+   channels[11]  = ((data[16]>>1|data[17]<<7) & 0x07FF);
+   //No point decoding these channels, not used in Silverware
+	 //channels[12]  = ((data[17]>>4|data[18]<<4) & 0x07FF);
+   //channels[13]  = ((data[18]>>7|data[19]<<1|data[20]<<9) & 0x07FF);
+   //channels[14]  = ((data[20]>>2|data[21]<<6) & 0x07FF);
+	 //RSSI channel, at least for the XM receiver
+   channels[15]  = ((data[21]>>5|data[22]<<3) & 0x07FF);
 
     if ( rx_state == 0)
     {
@@ -343,10 +353,22 @@ if ( frame_received )
 		    aux[CHAN_6] = (channels[5] > 993) ? 1 : 0;
 		    aux[CHAN_7] = (channels[6] > 993) ? 1 : 0;
 		    aux[CHAN_8] = (channels[7] > 993) ? 1 : 0;
+		    aux[CHAN_10] = (channels[9] > 993) ? 1 : 0;
+#ifdef USE_MULTI							
+		    aux[CHAN_12] = (channels[10] > 993) ? 1 : 0;
+		    aux[CHAN_13] = (channels[11] > 993) ? 1 : 0;
+#endif
+#ifdef USE_DEVO							
+		    aux[CHAN_11] = (channels[10] > 993) ? 1 : 0;
+		    aux[CHAN_12] = (channels[11] > 993) ? 1 : 0;
+#endif
+							
 #ifdef RSSI_WARNING_LEVEL
-				rssi_warning = (channels[8] < (2047 * RSSI_WARNING_LEVEL / 100)) ? 1 : 0;
-#else
-		    aux[CHAN_9] = (channels[8] > 993) ? 1 : 0;
+				// From tests, it seems RSSI channel goes from 195 to 1913 (194-1912?)
+				// Use same calculation style as for other analog channels
+				rssi = channels[15] - 194;
+				rssi *= 0.058207217f;
+				rssi_warning = (rssi < RSSI_WARNING_LEVEL ) ? 1 : 0;
 #endif
 
 #ifdef USE_ANALOG_AUX
